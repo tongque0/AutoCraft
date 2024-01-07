@@ -1,0 +1,28 @@
+version: '1'
+services:
+  app:
+    build: .
+    ports:
+      - "3002:3002"
+    environment:
+      - NODE_ENV=docker-devlopment
+    depends_on:
+      - mysql
+      - redis
+    volumes:
+      - .:/app
+      - /app/node_modules
+
+  mysql:
+    image: 'mysql:latest'
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_DATABASE=NServer
+      - MYSQL_USER=NServer
+      - MYSQL_PASSWORD=NServer1
+      - MYSQL_RANDOM_ROOT_PASSWORD="yes"
+  redis:
+    image: 'redis:latest'
+    ports:
+      - 6379:6379

@@ -1,0 +1,33 @@
+{
+  "name": "nodeserver",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx dotenv -e .env.development nodemon app.js",
+    "server": "npx dotenv -e .env.development node app.js",
+    "prod": "npx dotenv -e .env.production node app.js",
+    "docker": "npx dotenv -e .env.docker-development -- npx prisma migrate dev && npx dotenv -e .env.docker-development -- node app.js",
+    "migrate": "dotenv -e .env.development -- npx prisma migrate dev --name postgres-init"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@prisma/client": "^5.7.1",
+    "cors": "^2.8.5",
+    "dotenv": "^16.3.1",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "ioredis": "^5.3.2",
+    "mongodb": "^6.3.0",
+    "morgan": "^1.10.0",
+    "mysql2": "^3.6.5",
+    "winston": "^3.11.0"
+  },
+  "devDependencies": {
+    "dotenv-cli": "^7.3.0",
+    "prisma": "^5.7.1"
+  }
+}
