@@ -9,18 +9,22 @@
     "server": "npx dotenv -e .env.development node app.js",
     "prod": "npx dotenv -e .env.production node app.js",
     "docker": "npx dotenv -e .env.docker-development -- npx prisma migrate dev && npx dotenv -e .env.docker-development -- node app.js",
-    "migrate": "dotenv -e .env.development -- npx prisma migrate dev --name postgres-init"
+    "migrate": "dotenv -e .env.development -- npx prisma migrate dev --name migrate1",
+    "migrate:reset": "dotenv -e .env.development -- npx npx prisma migrate reset",
+    "prisma": "dotenv -e .env.development -- npx npx prisma studio"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.7.1",
+    "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "helmet": "^7.1.0",
     "ioredis": "^5.3.2",
+    "jsonwebtoken": "^9.0.2",
     "mongodb": "^6.3.0",
     "morgan": "^1.10.0",
     "mysql2": "^3.6.5",

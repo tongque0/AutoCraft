@@ -1,4 +1,5 @@
 import { PrismaClient } from '@prisma/client';
+
 export function InitPrisma() {
 
     const connectionString = process.env.Prisma_DATABASE;

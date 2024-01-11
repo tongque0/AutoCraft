@@ -1,6 +1,7 @@
 node_modules
-# Keep environment variables out of version control
-# Ignore all .env files except .env.example
-!.env.example
+# Ignore all .env files
 *.env
+# Except for the .env.example file
+!.env.example
+
 git
