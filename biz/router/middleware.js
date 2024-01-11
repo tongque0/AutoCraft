@@ -1,7 +1,7 @@
 import { verifyToken } from '../util/auth.js'
 export function authMiddleware(req, res, next) {
     // 允许登录和注册路由不经过身份验证
-    if (req.path === '/login' || req.path === '/reg') {
+    if (req.path === '/user/login' || req.path === '/user/reg') {
         return next();
     }
 
