@@ -40,7 +40,9 @@ Dokcer:
 ```
  Docker 运行环境的配置位于 docker-compose 文件中，默认加载 .env.docker-development 环境变量文件。注意：在使用开发时，可以选择使用 Docker 运行数据库，确保环境变量文件正确配置。
 
- 注意事项:开梯子可能造成数据库连接失败，以至于程序运行失败  # 开发
+ 注意事项:开梯子可能造成数据库连接失败，以至于程序运行失败
+
+# 开发
 
 1. **定义 API 在 apifox 中**
    - 使用 [api文档中](https://2gleddbc8g.apifox.cn/api-141489153) 进行 API 定义。
