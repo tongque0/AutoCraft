@@ -1,6 +1,6 @@
 import winston from 'winston';
 
-let logger = null;
+export let logger = null;
 
 export function SetLogger() {
     if (!logger) {

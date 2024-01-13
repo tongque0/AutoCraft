@@ -8,5 +8,6 @@ const router = express.Router();
 router.post('/user/reg',user.RegisterMethod)
 router.post('/user/login',user.LoginMethod)
 router.post('/user/changepassword',user.ChangePasswordMethod)
+router.post('/user/updateuserprofile',user.UpdateUserMethod)
 // 继续添加其他路由...
 export default router;

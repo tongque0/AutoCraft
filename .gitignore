@@ -1,10 +1,4 @@
 node_modules
 # Ignore all .env files
 *.env
-.env.development
-.env.docker-development
-.env.production
-# Except for the .env.example file
-!.env.example
-
 git

@@ -1,32 +1,36 @@
 import * as UserMethodService from '../../service/user/user.js'
+import {sendErrorResponse,sendSuccessResponse} from '../../util/resp.js'
 
 export async function RegisterMethod(req, res) {
     try {
         const result = await UserMethodService.CreateUser(req);
-        console.log("User Created:", result);
-        res.send(result);
+        sendSuccessResponse(res,200,result)
     } catch (error) {
-        console.error("Error in UserRegister:", error);
-        res.status(500).send('Internal Server Error');
+        sendErrorResponse(res,500,error)
     }
 }
 export async function LoginMethod(req, res) {
     try {
         const result = await UserMethodService.LoginUser(req);
-        console.log("User Login:", result);
-        res.send(result);
+        sendSuccessResponse(res,200,result)
     } catch (error) {
-        console.error("Error in UserRegister:", error);
-        res.status(500).send('Internal Server Error');
+        sendErrorResponse(res,500,error)
     }
 }
 export async function ChangePasswordMethod(req, res) {
     try {
         const result = await UserMethodService.ChangePassword(req);
-        console.log("Changpassword:", result);
-        res.send(result);
+        sendSuccessResponse(res,200,result)
     } catch (error) {
-        console.error("Error in UserRegister:", error);
-        res.status(500).send('Internal Server Error');
+        sendErrorResponse(res,500,error)
+    }
+}
+
+export async function UpdateUserMethod(req, res) {
+    try {
+        const result = await UserMethodService.UpdateUserProfile(req);
+        sendSuccessResponse(res,200,result)
+    } catch (error) {
+        sendErrorResponse(res,500,error)
     }
 }

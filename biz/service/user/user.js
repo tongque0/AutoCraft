@@ -1,23 +1,46 @@
 import { prisma } from "../../dal/init.js";
 import * as util from '../../util/auth.js'
+import { logger } from "../../util/logger.js";
 //因为使用了prisma，model层代码可以简化省略
 
 // 创建用户
 export async function CreateUser(req) {
-    const { email, password } = req.body;
-    const hashPassword = await util.encryptPassword(password)
+    const { email, password, profile } = req.body;
+    const hashPassword = await util.encryptPassword(password);
+
     try {
-        const user = await prisma.user.create({
-            data: {
-                email, // 对象字面量属性值简写
-                hashPassword // 保持字段命名一致
-            }
+        let user = await prisma.user.findUnique({
+            where: { email } // 对象字面量属性值简写
         });
-        console.log("Created User:", user);
+
+        if (user) {
+            return { error: "用户已存在" }; // 明确用户不存在的情况
+        }
+        // 使用事务同时创建用户和用户资料
+        user = await prisma.$transaction(async prisma => {
+            const newUser = await prisma.user.create({
+                data: {
+                    email,
+                    hashPassword,
+                },
+            });
+
+            const userProfile = await prisma.userProfile.create({
+                data: {
+                    userId: newUser.userId.toString(),
+                    name: profile?.name || '',
+                    address: profile?.address || '',
+                    phone: profile?.phone || '',
+                },
+            });
+
+            return { ...newUser, profile: userProfile };
+        });
+        user.token = util.generateToken(user)
         return user;
     } catch (error) {
-        console.error("Error in CreateUser:", error);
-        throw new Error('Error creating user'); // 抛出自定义错误信息
+        logger.error("Error in CreateUser:", error);
+        throw new error;
     }
 }
 
@@ -35,19 +58,21 @@ export async function LoginUser(req) {
         const authLogin = await util.validatePassword(password, user.hashPassword)
         user.token = util.generateToken(user)
         if (authLogin) {
+            delete user.hashPassword
             return user;
         } else {
             return { error: "密码错误" }; // 明确密码错误的情况
         }
     } catch (error) {
-        console.error("Error in LoginUser:", error);
-        return { error: '登录过程中发生错误' }; // 优化错误处理
+        logger.error("Error in LoginUser:", error);
+        throw error;
     }
 }
+
 // 修改密码
 export async function ChangePassword(req) {
     const { oldPassword, newPassword } = req.body;
-    const { userId }  = req.user
+    const { userId } = req.user
     try {
         // 获取当前用户的信息
         const user = await prisma.user.findUnique({
@@ -72,11 +97,27 @@ export async function ChangePassword(req) {
             where: { id: userId },
             data: { hashPassword: hashNewPassword }
         });
-
-        console.log("Password changed for user:", updatedUser);
-        return { message: "密码已更新" };
+        delete updatedUser.hashPassword
+        return updatedUser;
     } catch (error) {
-        console.error("Error in ChangePassword:", error);
-        return { error: '修改密码过程中发生错误' };
+        logger.error("Error in ChangePassword:", error);
+        throw error;
+    }
+}
+
+//更新用户信息
+export async function UpdateUserProfile(req) {
+    const { userId } = req.user;
+    const { name, address, phone } = req.body;
+    try {
+        const userProfile = await prisma.userProfile.update({
+            where: { userId: userId.toString() },
+            data: { name, address, phone }
+        });
+
+        return userProfile;
+    } catch (error) {
+        logger.error("Error in UpdateUserProfile:", error);
+        throw error;
     }
 }
