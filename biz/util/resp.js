@@ -1,9 +1,8 @@
 import { validationResult, check } from 'express-validator';
 
 // 发送错误响应
-export function sendErrorResponse(res, code, errors) {
-    console.log(errors);
-    res.status(code).json({ errors });
+export function sendErrorResponse(res, code, message) {
+    res.status(code).json({ message });
 }
 
 // 发送成功响应

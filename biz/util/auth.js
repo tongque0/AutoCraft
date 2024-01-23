@@ -28,7 +28,7 @@ async function validatePassword(password, hashedPassword) {
 // 生成 JWT 令牌
 function generateToken(user) {
     const payload = { userId: user.userId, email: user.email };
-    return jwt.sign(payload, secretKey, { expiresIn: '1h' });
+    return jwt.sign(payload, secretKey, { expiresIn: '24h' });
 }
 
 // 验证 JWT 令牌

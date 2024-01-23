@@ -1,5 +1,6 @@
 import { prisma } from "../../dal/init.js";
 import * as util from '../../util/auth.js'
+import * as helper from '../../util/helper.js'
 import { logger } from "../../util/logger.js";
 //因为使用了prisma，model层代码可以简化省略
 
@@ -14,7 +15,7 @@ export async function CreateUser(req) {
         });
 
         if (user) {
-            return { error: "用户已存在" }; // 明确用户不存在的情况
+            return { message: "用户已存在", status: 400 }; // 明确用户不存在的情况
         }
         // 使用事务同时创建用户和用户资料
         user = await prisma.$transaction(async prisma => {
@@ -28,14 +29,15 @@ export async function CreateUser(req) {
             const userProfile = await prisma.userProfile.create({
                 data: {
                     userId: newUser.userId.toString(),
-                    name: profile?.name || '',
+                    name: profile?.name || helper.generateUserName() || '',
                     address: profile?.address || '',
-                    phone: profile?.phone || '',
+                    phone: profile?.phone || 'null',
                 },
             });
 
             return { ...newUser, profile: userProfile };
         });
+        delete user.hashPassword
         user.token = util.generateToken(user)
         return user;
     } catch (error) {
@@ -53,7 +55,7 @@ export async function LoginUser(req) {
         });
 
         if (!user) {
-            return { error: "用户不存在" }; // 明确用户不存在的情况
+            return { message: "用户不存在", status: 404 }; // 明确用户不存在的情况
         }
         const authLogin = await util.validatePassword(password, user.hashPassword)
         user.token = util.generateToken(user)
@@ -61,7 +63,7 @@ export async function LoginUser(req) {
             delete user.hashPassword
             return user;
         } else {
-            return { error: "密码错误" }; // 明确密码错误的情况
+            return { message: "密码错误", status: 401 }; // 明确密码错误的情况
         }
     } catch (error) {
         logger.error("Error in LoginUser:", error);
@@ -76,17 +78,17 @@ export async function ChangePassword(req) {
     try {
         // 获取当前用户的信息
         const user = await prisma.user.findUnique({
-            where: { id: userId }
+            where: { userId: userId }
         });
 
         if (!user) {
-            return { error: "用户不存在" };
+            return { message: "用户不存在", status: 404 };
         }
 
         // 验证旧密码
         const isValidPassword = await util.validatePassword(oldPassword, user.hashPassword);
         if (!isValidPassword) {
-            return { error: "旧密码不正确" };
+            return { message: "旧密码错误", status: 401 };
         }
 
         // 加密新密码
@@ -94,7 +96,7 @@ export async function ChangePassword(req) {
 
         // 更新密码
         const updatedUser = await prisma.user.update({
-            where: { id: userId },
+            where: { userId: userId },
             data: { hashPassword: hashNewPassword }
         });
         delete updatedUser.hashPassword
@@ -109,15 +111,55 @@ export async function ChangePassword(req) {
 export async function UpdateUserProfile(req) {
     const { userId } = req.user;
     const { name, address, phone } = req.body;
+
     try {
-        const userProfile = await prisma.userProfile.update({
+        const updatedUserProfile = await prisma.userProfile.upsert({
             where: { userId: userId.toString() },
-            data: { name, address, phone }
+            update: { name, address, phone },
+            create: {
+                userId: userId.toString(),
+                name,
+                address,
+                phone,
+            },
         });
 
-        return userProfile;
+        return updatedUserProfile;
     } catch (error) {
         logger.error("Error in UpdateUserProfile:", error);
         throw error;
     }
 }
+
+// 获取所有用户
+export async function GetAllUsers(req) {
+    try {
+        const users = await prisma.user.findMany({
+            select: {
+                userId: true,
+                email: true,
+                role: true,
+                profile: {
+                    select: {
+                        name: true,
+                        phone: true,
+                        address: true,
+                    },
+                },
+            },
+            // 可以添加排序、过滤条件等
+        });
+
+        // 解构每个用户对象，将 profile 信息移至顶层
+        const modifiedUsers = users.map(user => {
+            const { profile, ...otherDetails } = user;
+            return { ...otherDetails, ...profile };
+        });
+
+        return modifiedUsers;
+    } catch (error) {
+        logger.error("Error in GetAllUsers:", error);
+        throw error;
+    }
+}
+

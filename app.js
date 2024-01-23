@@ -18,7 +18,7 @@ async function main() {
 
     await RouterRegister(app)
 
-    const port = process.env.EXPRESS_PORT||3000; // 从配置获取端口
+    const port = process.env.EXPRESS_PORT || 3000; // 从配置获取端口
     app.listen(port, () => {
         console.log(`Server listening on port ${port}`);
     });
@@ -27,9 +27,12 @@ async function main() {
 function registerMiddleware(app) {
     // Helmet 增强应用的安全性
     app.use(helmet());
-
+    const corsOptions = {
+        origin: 'http://localhost:3003', // 允许来自 localhost:3003 的请求
+        credentials: true, // 允许发送 cookies
+    };
     // CORS 中间件用于处理跨源资源共享（CORS）
-    app.use(cors());
+    app.use(cors(corsOptions));
 
     //日志,将morgan日志重定向至Winston
     const logger = SetLogger()

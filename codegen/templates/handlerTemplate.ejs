@@ -1,0 +1,8 @@
+import * as <%= serviceName %> from '<%= servicePath %>';
+import { handleServiceCall } from '../handlerHelpers.js';
+
+<% methods.forEach(function(method) { %>
+export async function <%= method %>Method(req, res) {
+    await handleServiceCall(<%= serviceName %>.<%= method %>, req, res);
+}
+<% }); %>

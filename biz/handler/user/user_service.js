@@ -14,3 +14,7 @@ export async function ChangePasswordMethod(req, res) {
 export async function UpdateUserMethod(req, res) {
     await handleServiceCall(UserMethodService.UpdateUserProfile, req, res);
 }
+export async function GetAllUsersMethod(req, res) {
+    await handleServiceCall(UserMethodService.GetAllUsers, req, res);
+}
+
