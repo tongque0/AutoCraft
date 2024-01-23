@@ -1,14 +1,16 @@
 
 # NodeServer
 
-这是一个使用node服务端的开发模版，致力于快速简单的构建高稳定，高可用的服务。
+这是一个使用node服务端的开发模版，致力于快速简单的构建高稳定，高可用的服务。此模板自带后台管理系统(暂未整合到此项目中)，支持根据schema.prisma生成CRUD代码，同时生成后台pages页面。
 
 
 ## 技术栈
 
-**客户端:**
+**后台管理:** TDesign,
 
-**服务端:** Node, Express,Prisma,Docker
+**服务端:** Node, Express,Prisma,
+
+**容器化:** Docker
 
 
 ## 运行测试
@@ -55,6 +57,7 @@ Dokcer:
    - `route` 层定义路由，将请求映射到对应的 `handler`。
    - `service` 层处理具体的业务逻辑。
    - `model` 层表示数据结构，可能与数据库进行交互（因为使用Prisma，model层不明显）。
+   - 此过程可在使用codegen编写的代码生成器,自动生成CURD相关代码,且生成的handler，router层代码原则上可不改动，service层代码根据需求进行修改(此功能依赖schema.prisma,为使用prisma作为orm则不能使用此功能)
 
 3. **编写测试**
    - 在 `handler` 层，为每个接口编写单元测试，确保其正常工作。
@@ -75,3 +78,5 @@ Dokcer:
 [Prisma](https://prisma.yoga/concepts/components/prisma-schema#accessing-environment-variables-from-the-schema)
 [Apifox](https://apifox.com/?utm_source=baidu&utm_medium=sem&utm_campaign=251527561&utm_content=7811417731&utm_term=apifox%E8%BF%9E%E6%8E%A5%E6%95%B0%E6%8D%AE%E5%BA%93&bd_vid=6126891854488729200)
 [Docker](https://www.docker.com/)
+[TDesign](https://tdesign.tencent.com/)
+
