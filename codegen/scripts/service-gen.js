@@ -7,7 +7,7 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 const prismaSchemaPath = path.join(__dirname, '../../prisma/schema.prisma');
 const prismaSchema = fs.readFileSync(prismaSchemaPath, 'utf8');
-console.log(prismaSchemaPath)
+
 const modelRegex = /model\s+(\w+)/g;
 let match;
 const modelNames = [];
@@ -18,7 +18,7 @@ while ((match = modelRegex.exec(prismaSchema)) !== null) {
 
 const templatePath = path.join(__dirname, '../templates/serviceTemplate.ejs');
 const template = fs.readFileSync(templatePath, 'utf8');
-console.log(templatePath)
+
 modelNames.forEach(modelName => {
     const renderedCode = ejs.render(template, {
         modelName: capitalizeFirstLetter(modelName),

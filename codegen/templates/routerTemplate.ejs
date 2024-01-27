@@ -1,0 +1,16 @@
+import express from 'express';
+import * as <%= modelName %>Handler from '../../handler/<%= modelNameLowerCase %>/<%= modelNameLowerCase %>_service.js';
+
+const router = express.Router();
+
+// 根据模型生成的路由
+router.post('/<%= modelNameLowerCase %>/create', <%= modelName %>Handler.Create<%= modelName %>Method);
+router.get('/<%= modelNameLowerCase %>/allsimple', <%= modelName %>Handler.GetAll<%= modelName %>sSimpleMethod);
+router.get('/<%= modelNameLowerCase %>/all', <%= modelName %>Handler.GetAll<%= modelName %>sMethod);
+router.get('/<%= modelNameLowerCase %>/:id', <%= modelName %>Handler.Get<%= modelName %>ByIdMethod);
+router.put('/<%= modelNameLowerCase %>/:id', <%= modelName %>Handler.Update<%= modelName %>Method);
+router.delete('/<%= modelNameLowerCase %>/:id', <%= modelName %>Handler.Delete<%= modelName %>Method);
+
+// 可以继续添加其他路由...
+
+export default router;

@@ -1,8 +1,28 @@
-import * as <%= serviceName %> from '<%= servicePath %>';
+// 引入对应的服务层
+import * as <%= modelName %>Service from '../../service/<%= modelNameLowerCase %>/<%= modelNameLowerCase %>.js';
 import { handleServiceCall } from '../handlerHelpers.js';
 
-<% methods.forEach(function(method) { %>
-export async function <%= method %>Method(req, res) {
-    await handleServiceCall(<%= serviceName %>.<%= method %>, req, res);
+// 根据模型生成的各种方法
+export async function Create<%= modelName %>Method(req, res) {
+    await handleServiceCall(<%= modelName %>Service.Create<%= modelName %>, req, res);
 }
-<% }); %>
+
+export async function GetAll<%= modelName %>sSimpleMethod(req, res) {
+    await handleServiceCall(<%= modelName %>Service.GetAll<%= modelName %>sSimple, req, res);
+}
+
+export async function GetAll<%= modelName %>sMethod(req, res) {
+    await handleServiceCall(<%= modelName %>Service.GetAll<%= modelName %>s, req, res);
+}
+
+export async function Get<%= modelName %>ByIdMethod(req, res) {
+    await handleServiceCall(<%= modelName %>Service.Get<%= modelName %>ById, req, res);
+}
+
+export async function Update<%= modelName %>Method(req, res) {
+    await handleServiceCall(<%= modelName %>Service.Update<%= modelName %>, req, res);
+}
+
+export async function Delete<%= modelName %>Method(req, res) {
+    await handleServiceCall(<%= modelName %>Service.Delete<%= modelName %>, req, res);
+}
