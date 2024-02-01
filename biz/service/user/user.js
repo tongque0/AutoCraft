@@ -29,9 +29,6 @@ export async function CreateUser(req) {
             const userProfile = await prisma.userProfile.create({
                 data: {
                     userId: newUser.userId.toString(),
-                    name: profile?.name || helper.generateUserName() || '',
-                    address: profile?.address || '',
-                    phone: profile?.phone || 'null',
                 },
             });
 
@@ -135,18 +132,7 @@ export async function UpdateUserProfile(req) {
 export async function GetAllUsers(req) {
     try {
         const users = await prisma.user.findMany({
-            select: {
-                userId: true,
-                email: true,
-                role: true,
-                profile: {
-                    select: {
-                        name: true,
-                        phone: true,
-                        address: true,
-                    },
-                },
-            },
+
             // 可以添加排序、过滤条件等
         });
 

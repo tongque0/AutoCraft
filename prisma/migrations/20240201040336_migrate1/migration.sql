@@ -1,0 +1,3 @@
+-- AlterTable
+ALTER TABLE `Role` ADD COLUMN `isSetup` BOOLEAN NULL,
+    MODIFY `level` INTEGER NULL;

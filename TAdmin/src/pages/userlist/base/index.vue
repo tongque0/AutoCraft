@@ -22,33 +22,13 @@
                 :pagination="pagination" :selected-row-keys="selectedRowKeys" :loading="dataLoading"
                 :header-affixed-top="headerAffixedTop" @page-change="rehandlePageChange" @change="rehandleChange"
                 @select-change="rehandleSelectChange">
-                <template #status="{ row }">
-                    <t-tag v-if="row.role === 'admin'" theme="danger" variant="light">
+                <template #role="{ row }">
+                    <t-tag v-if="row.role === 'admin'" theme="success" variant="light">
                         管理员</t-tag>
-                    <t-tag v-if="row.role === 'USER'" theme="warning" variant="light">
+                    <t-tag v-if="row.role === 'user'" theme="primary" variant="light">
                         用户
                     </t-tag>
                 </template>
-                <template #contractType="{ row }">
-                    <p v-if="row.contractType === CONTRACT_TYPES.MAIN">{{ $t('pages.listBase.contractStatusEnum.fail') }}
-                    </p>
-                    <p v-if="row.contractType === CONTRACT_TYPES.SUB">{{ $t('pages.listBase.contractStatusEnum.audit') }}
-                    </p>
-                    <p v-if="row.contractType === CONTRACT_TYPES.SUPPLEMENT">
-                        {{ $t('pages.listBase.contractStatusEnum.pending') }}
-                    </p>
-                </template>
-                <template #paymentType="{ row }">
-                    <div v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.PAYMENT" class="payment-col">
-                        {{ $t('pages.listBase.pay') }}
-                        <trend class="dashboard-item-trend" type="up" />
-                    </div>
-                    <div v-if="row.paymentType === CONTRACT_PAYMENT_TYPES.RECEIPT" class="payment-col">
-                        {{ $t('pages.listBase.receive') }}
-                        <trend class="dashboard-item-trend" type="down" />
-                    </div>
-                </template>
-
                 <template #op="slotProps">
                     <t-space>
                         <t-link theme="primary" @click="handleClickDetail()"> {{ $t('pages.listBase.detail') }}</t-link>
@@ -74,15 +54,15 @@ import { useRouter } from 'vue-router';
 import { GetUserList } from '@/api/user';
 import Trend from '@/components/trend/index.vue';
 import { prefix } from '@/config/global';
-import { CONTRACT_PAYMENT_TYPES, CONTRACT_STATUS, CONTRACT_TYPES } from '@/constants';
 import { t } from '@/locales';
 import { useSettingStore } from '@/store';
+import { number } from 'echarts';
 
 const store = useSettingStore();
 
 const COLUMNS: PrimaryTableCol<TableRowData>[] = [
     { colKey: 'row-select', type: 'multiple', width: 64, fixed: 'left' },
-    { title: "用户名", align: 'left', width: 200, colKey: 'name', fixed: 'left' },
+    { title: "用户名", align: 'left', width: 200, colKey: 'username', fixed: 'left' },
     { title: "用户身份", colKey: 'role', width: 160 },
     { title: "用户邮箱", width: 160, ellipsis: true, colKey: 'email' },
     { title: "用户手机号", width: 160, ellipsis: true, colKey: 'phone' },
@@ -183,6 +163,7 @@ const handleSetupContract = () => {
 };
 const handleClickDelete = (row: { rowIndex: any }) => {
     deleteIdx.value = row.rowIndex;
+    // console.log(globalIndex,row)
     confirmVisible.value = true;
 };
 

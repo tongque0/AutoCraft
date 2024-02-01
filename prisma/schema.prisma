@@ -1,8 +1,3 @@
-//此文件用来迁移数据库，生成prismaclient
-//迁移使用命令 npm run migrate 此命令设置环境为development，按需修改命令
-//使用npm run prisma命令可直接在浏览器在线预览数据库
-//使用npm run migrate:reset 将会重置数据库
-//注意，对应已经应用的迁移数据库，需要先执行reset再进行迁移(有误)
 generator client {
   provider = "prisma-client-js"
 }
@@ -12,29 +7,36 @@ datasource db {
   url      = env("Prisma_DATABASE")
 }
 
-// 用户登录表
+model Route {
+  id           Int     @id @default(autoincrement())
+  name         String  @unique
+  children     Route[] @relation("RouteToRoute")
+  parentRoute  Int?
+  parent       Route?  @relation("RouteToRoute", fields: [parentRoute], references: [id])
+  allowedRoles Role[]  @relation("RoleToRoute")
+}
+
+model Role {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  level  Int? // 角色等级
+  isSetup Boolean?
+  routes Route[] @relation("RoleToRoute")
+}
+
 model User {
-  id           Int          @id @default(autoincrement())
-  userId       String       @unique @default(uuid())
-  email        String       @unique
+  userId       String       @id  @default(uuid())
+  username     String?
+  email        String?      @unique
+  phone        String?      @unique
   hashPassword String
-  role         Role         @default(USER)
+  role         String       @default("user")
   createdAt    DateTime     @default(now())
   profile      UserProfile?
 }
 
-// 用户信息表
 model UserProfile {
-  id       Int     @id @default(autoincrement())
-  userId   String  @unique
-  userAuth User    @relation(fields: [userId], references: [userId])
-  name     String?
-  phone    String? @unique
-  address  String?
-}
-
-// 角色枚举
-enum Role {
-  USER
-  ADMIN
+  id     Int    @id @default(autoincrement())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [userId])
 }
