@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="list-card-operation">
-            <t-button @click="formDialogVisible = true"> 新建角色 </t-button>
+            <t-button @click='handleCreateRole'> 新建角色 </t-button>
             <div class="search-input">
                 <t-input v-model="searchValue" :placeholder="$t('pages.listCard.placeholder')" clearable>
                     <template #suffix-icon>
@@ -21,7 +21,7 @@
                         pagination.pageSize * pagination.current,
                     )" :key="product.index" :lg="4" :xs="6" :xl="3">
                         <product-card class="list-card-item" :product="product" @delete-item="handleDeleteItem"
-                            @manage-product="handleManageProduct" />
+                            @manage-product="handleManageRole" />
                     </t-col>
                 </t-row>
             </div>
@@ -36,7 +36,7 @@
             <t-loading size="large" text="加载数据中..." />
         </div>
 
-        <t-dialog v-model:visible="confirmVisible" header="确认删除所选产品？" :body="confirmBody" :on-cancel="onCancel"
+        <t-dialog v-model:visible="confirmVisible" header="确认删除角色？" :body="confirmBody" :on-cancel="onCancel"
             @confirm="onConfirmDelete" />
     </div>
 </template>
@@ -50,22 +50,19 @@ export default {
 <script setup lang="ts">
 import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin } from 'tdesign-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
-import { GetRoleList } from '@/api/role';
+import { GetRoleList, GetRoleable, DeleteRoleable } from '@/api/role';
 import type { CardProductType } from '@/components/product-card/index.vue';
-import ProductCard from '@/components/product-card/index.vue';
+import ProductCard from './components/ProductCard.vue';
 
-import type { FormData } from './components/DialogForm.vue';
+import type { FormData, Permission } from './components/DialogForm.vue';
 import DialogForm from './components/DialogForm.vue';
 
 const INITIAL_DATA: FormData = {
     name: '',
     status: '',
-    description: '',
-    type: '0',
-    mark: '',
-    amount: 0,
+    permissions: []
 };
 
 const pagination = ref({ current: 1, pageSize: 12, total: 0 });
@@ -76,8 +73,7 @@ const dataLoading = ref(true);
 
 const fetchData = async () => {
     try {
-        const  list  = await GetRoleList();
-        console.log(list)
+        const list = await GetRoleList();
         productList.value = list;
         pagination.value = {
             ...pagination.value,
@@ -110,31 +106,68 @@ const onPageSizeChange = (size: number) => {
 const onCurrentChange = (current: number) => {
     pagination.value.current = current;
 };
-const handleDeleteItem = (product: CardProductType) => {
+const handleDeleteItem =(product: CardProductType) => {
     confirmVisible.value = true;
     deleteProduct.value = product;
 };
-const onConfirmDelete = () => {
-    const { index } = deleteProduct.value;
-    productList.value.splice(index - 1, 1);
+const onConfirmDelete = async () => {
+    const { id } = deleteProduct.value;
+    try {
+        await DeleteRoleable(id);
+        MessagePlugin.success('删除成功');
+    } catch (error) {
+        console.error('删除失败: ', error);
+        MessagePlugin.error('删除失败');
+    }
     confirmVisible.value = false;
     MessagePlugin.success('删除成功');
+    fetchData()
 };
 const onCancel = () => {
     deleteProduct.value = undefined;
     formData.value = { ...INITIAL_DATA };
 };
-const handleManageProduct = (product: CardProductType) => {
+const initializePermissions = (permissions: Permission[]): Permission[] => {
+    return permissions.map(permission => {
+        const initializedChildren = permission.children
+            ? initializePermissions(permission.children) // 递归初始化子权限
+            : [];
+
+        return {
+            ...permission,
+            children: initializedChildren,
+            selectedOptions: permission.enable
+                ? initializedChildren.map(child => child.id)
+                : [],
+            accessType: permission.level > 3 ? 'readWrite' : 'read', // 根据实际逻辑调整
+        };
+    });
+};
+
+const handleManageRole = async (product: CardProductType) => {
     formDialogVisible.value = true;
+    const list = await GetRoleable(product.name);
     formData.value = {
         name: product.name,
         status: product?.isSetup ? '1' : '0',
-        description: product.description,
-        type: product.type.toString(),
-        mark: '',
-        amount: 0,
+        permissions: initializePermissions(list),
     };
 };
+const handleCreateRole = async () => {
+    formDialogVisible.value = true;
+    const list = await GetRoleable();
+    formData.value = {
+        name: '',
+        status: '1',
+        permissions: initializePermissions(list),
+    };
+};
+
+watch(formDialogVisible, (newValue, oldValue) => {
+    if (!newValue) {
+        fetchData();
+    }
+});
 </script>
 
 <style lang="less" scoped>

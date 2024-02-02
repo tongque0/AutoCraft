@@ -3,95 +3,95 @@ import * as util from '../../util/auth.js';
 import * as helper from '../../util/helper.js';
 import { logger } from "../../util/logger.js";
 
-// 创建Role
-export async function CreateRole(req) {
+// 创建Route
+export async function CreateRoute(req) {
     const data = req.body;
     // 这里可以添加数据验证逻辑
     try {
-        const createdItem = await prisma.role.create({
+        const createdItem = await prisma.route.create({
             data: data,
             // 这里可以添加关联数据的处理
         });
         return createdItem;
     } catch (error) {
-        logger.error("Error in CreateRole:", error);
+        logger.error("Error in CreateRoute:", error);
         throw error;
     }
 }
 
-// 获取所有Role列表（无分页）
-export async function GetAllRolesSimple(req) {
+// 获取所有Route列表（无分页）
+export async function GetAllRoutesSimple(req) {
     try {
-        const items = await prisma.role.findMany({
+        const items = await prisma.route.findMany({
             // 这里可以添加过滤和排序逻辑
         });
         return items;
     } catch (error) {
-        logger.error("Error in GetAllRolesSimple:", error);
+        logger.error("Error in GetAllRoutesSimple:", error);
         throw error;
     }
 }
 
-// 获取所有Role列表，可以加入分页和筛选逻辑
-export async function GetAllRoles(req) {
+// 获取所有Route列表，可以加入分页和筛选逻辑
+export async function GetAllRoutes(req) {
     const { page, pageSize, ...filters } = req.query;
     try {
-        const items = await prisma.role.findMany({
+        const items = await prisma.route.findMany({
             where: filters,
-            skip: (page - 1) * pageSize,
-            take: pageSize,
+            skip: (parseInt(page) - 1) * parseInt(pageSize),
+            take: parseInt(pageSize), // 确保 take 是整数
             // 这里可以添加排序逻辑
         });
         return items;
     } catch (error) {
-        logger.error("Error in GetAllRoles:", error);
+        logger.error("Error in GetAllRoutes:", error);
         throw error;
     }
 }
 
-// 获取单个Role
-export async function GetRoleById(req) {
-    const { id } = req.params;
+// 获取单个Route
+export async function GetRouteById(req) {
+    const id = parseInt(req.params.id);
     try {
-        const item = await prisma.role.findUnique({
+        const item = await prisma.route.findUnique({
             where: { id },
             // 这里可以添加关联数据的加载
         });
         return item;
     } catch (error) {
-        logger.error("Error in GetRoleById:", error);
+        logger.error("Error in GetRouteById:", error);
         throw error;
     }
 }
 
-// 更新Role
-export async function UpdateRole(req) {
-    const { id } = req.params;
+// 更新Route
+export async function UpdateRoute(req) {
+    const id = parseInt(req.params.id);
     const data = req.body;
     // 这里可以添加数据验证逻辑
     try {
-        const updatedItem = await prisma.role.update({
+        const updatedItem = await prisma.route.update({
             where: { id },
             data: data,
             // 这里可以添加关联数据的处理
         });
         return updatedItem;
     } catch (error) {
-        logger.error("Error in UpdateRole:", error);
+        logger.error("Error in UpdateRoute:", error);
         throw error;
     }
 }
 
-// 删除Role
-export async function DeleteRole(req) {
-    const { id } = req.params;
+// 删除Route
+export async function DeleteRoute(req) {
+    const id = parseInt(req.params.id);
     try {
-        await prisma.role.delete({
+        await prisma.route.delete({
             where: { id }
         });
-        return { message: 'Role Deleted Successfully' };
+        return { message: 'Route Deleted Successfully' };
     } catch (error) {
-        logger.error("Error in DeleteRole:", error);
+        logger.error("Error in DeleteRoute:", error);
         throw error;
     }
 }

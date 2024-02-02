@@ -12,20 +12,20 @@ model Route {
   name         String  @unique
   children     Route[] @relation("RouteToRoute")
   parentRoute  Int?
+  level        Int? // 角色等级
   parent       Route?  @relation("RouteToRoute", fields: [parentRoute], references: [id])
   allowedRoles Role[]  @relation("RoleToRoute")
 }
 
 model Role {
-  id     Int     @id @default(autoincrement())
-  name   String  @unique
-  level  Int? // 角色等级
+  id      Int      @id @default(autoincrement())
+  name    String   @unique
   isSetup Boolean?
-  routes Route[] @relation("RoleToRoute")
+  routes  Route[]  @relation("RoleToRoute")
 }
 
 model User {
-  userId       String       @id  @default(uuid())
+  userId       String       @id @default(uuid())
   username     String?
   email        String?      @unique
   phone        String?      @unique

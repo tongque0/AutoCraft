@@ -98,30 +98,76 @@ export async function DeleteRole(req) {
 
 //创建角色路由关联
 export async function createOrUpdateRoleWithSelectedRoutes(req) {
-    const { roleId, selectedRouteIds, ...otherRoleData } = req.body;
-    console.log(roleId, selectedRouteIds);
+    const { roleId, routeslevel, ...otherRoleData } = req.body;
+    console.log(roleId, routeslevel, otherRoleData);
 
     try {
-        // 更新角色的路由关联
-        const updatedRole = await prisma.role.update({
-            where: { id: roleId },
-            data: {
-                routes: {
-                    set:[], // 先清空现有的关联
-                    connect: selectedRouteIds.map(id => ({ id })), // 然后建立新的关联
-                },
-            },
+        // 检查角色是否存在
+        let role = await prisma.role.findUnique({
+            where: { name: roleId },
         });
 
-        return updatedRole;
+        if (role) {
+            // 更新现有角色
+            role = await prisma.role.update({
+                where: { name: roleId },
+                data: {
+                    routes: {
+                        set: [], // 清空现有的关联
+                        connect: otherRoleData.selectroutes.map(id => ({ id })), // 建立新的关联
+                    },
+                    isSetup: otherRoleData.status !== '0',
+                },
+            });
+        } else {
+            // 创建新角色
+            role = await prisma.role.create({
+                data: {
+                    name: roleId,
+                    // 其他角色相关数据...
+                    isSetup: otherRoleData.status !== '0',
+                    routes: {
+                        connect: otherRoleData.selectroutes.map(id => ({ id })),
+                    },
+                },
+            });
+        }
+
+        // // 更新或创建路由等级
+        // const updateOrCreateRouteLevel = async (route) => {
+        //     const existingRoute = await prisma.route.findUnique({
+        //         where: { id: route.id },
+        //     });
+
+        //     if (existingRoute) {
+        //         return prisma.route.update({
+        //             where: { id: route.id },
+        //             data: { level: route.level },
+        //         });
+        //     } else {
+        //         return prisma.route.create({
+        //             data: {
+        //                 id: route.id,
+        //                 level: route.level,
+        //                 // 其他路由相关数据...
+        //             },
+        //         });
+        //     }
+        // };
+
+        // await Promise.all(routeslevel.map(updateOrCreateRouteLevel));
+
+        return "Update successful";
     } catch (error) {
         console.error("Error in updateRoleRoutes:", error);
         throw error;
     }
 }
+
+
 //获取角色关联路由
 export async function getRoutesForRole(req) {
-    const roleId = parseInt(req.params.id );
+    const roleId = parseInt(req.params.id);
     try {
         // 获取角色及其关联的路由
         const roleWithRoutes = await prisma.role.findUnique({
@@ -141,3 +187,28 @@ export async function getRoutesForRole(req) {
         throw error;
     }
 }
+export async function getRoutesForRoleByUserId(userId) {
+
+    try {
+        // 获取角色及其关联的路由
+        const user = await prisma.user.findUnique({
+            where: { userId: userId }
+        })
+        const roleWithRoutes = await prisma.role.findUnique({
+            where: { name: user.role },
+            include: {
+                routes: true, // 包含关联的路由
+            },
+        });
+
+        if (!roleWithRoutes) {
+            throw new Error('角色不存在');
+        }
+
+        return roleWithRoutes.routes;
+    } catch (error) {
+        console.error("Error in getRoutesForRole:", error);
+        throw error;
+    }
+}
+

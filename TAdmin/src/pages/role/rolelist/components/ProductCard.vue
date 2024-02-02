@@ -6,7 +6,7 @@
           <shop-icon v-if="product.type === 1" />
           <calendar-icon v-if="product.type === 2" />
           <service-icon v-if="product.type === 3" />
-          <user-avatar-icon v-if="product.type === 4" />
+          <user-avatar-icon />
           <laptop-icon v-if="product.type === 5" />
         </template>
       </t-avatar>
@@ -32,7 +32,7 @@
     </template>
     <template #actions>
       <t-dropdown
-        :disabled="!product.isSetup"
+        :disabled="false"
         trigger="click"
         :options="[
           {
@@ -47,7 +47,7 @@
           },
         ]"
       >
-        <t-button theme="default" :disabled="!product.isSetup" shape="square" variant="text">
+        <t-button theme="default" :disabled="false" shape="square" variant="text">
           <more-icon />
         </t-button>
       </t-dropdown>
@@ -67,7 +67,6 @@ import {
 import type { PropType } from 'vue';
 
 export interface CardProductType {
-  id:number;
   type: number;
   isSetup: boolean;
   description: string;

@@ -1,5 +1,5 @@
 import express from 'express';
-import * as RouteHandler from '../../handler/route/route_service.js';
+import * as RouteHandler from '../../handler/route/routeHandler.js';
 
 const router = express.Router();
 

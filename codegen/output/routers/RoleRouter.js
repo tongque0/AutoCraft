@@ -1,5 +1,5 @@
 import express from 'express';
-import * as RoleHandler from '../../handler/role/role_service.js';
+import * as RoleHandler from '../../handler/role/roleHandler.js';
 
 const router = express.Router();
 

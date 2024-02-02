@@ -1,5 +1,5 @@
 // 引入对应的服务层
-import * as UserProfileService from '../../service/userprofile/userprofile.js';
+import * as UserProfileService from '../../service/userprofile/userprofile_service.js';
 import { handleServiceCall } from '../handlerHelpers.js';
 
 // 根据模型生成的各种方法

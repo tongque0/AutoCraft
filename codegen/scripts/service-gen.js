@@ -25,7 +25,7 @@ modelNames.forEach(modelName => {
         modelNameLowerCase: modelName.toLowerCase()
     });
 
-    const outputPath = path.join(__dirname, `../output/services/${modelName}Service.js`);
+    const outputPath = path.join(__dirname, `../output/services/${modelName}_service.js`);
     fs.writeFileSync(outputPath, renderedCode);
 });
 

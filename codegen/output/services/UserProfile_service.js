@@ -38,8 +38,8 @@ export async function GetAllUserProfiles(req) {
     try {
         const items = await prisma.userprofile.findMany({
             where: filters,
-            skip: (page - 1) * pageSize,
-            take: pageSize,
+            skip: (parseInt(page) - 1) * parseInt(pageSize),
+            take: parseInt(pageSize), // 确保 take 是整数
             // 这里可以添加排序逻辑
         });
         return items;
@@ -51,7 +51,7 @@ export async function GetAllUserProfiles(req) {
 
 // 获取单个UserProfile
 export async function GetUserProfileById(req) {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     try {
         const item = await prisma.userprofile.findUnique({
             where: { id },
@@ -66,7 +66,7 @@ export async function GetUserProfileById(req) {
 
 // 更新UserProfile
 export async function UpdateUserProfile(req) {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const data = req.body;
     // 这里可以添加数据验证逻辑
     try {
@@ -84,7 +84,7 @@ export async function UpdateUserProfile(req) {
 
 // 删除UserProfile
 export async function DeleteUserProfile(req) {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     try {
         await prisma.userprofile.delete({
             where: { id }

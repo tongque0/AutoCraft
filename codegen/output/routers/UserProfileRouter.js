@@ -1,5 +1,5 @@
 import express from 'express';
-import * as UserProfileHandler from '../../handler/userprofile/userprofile_service.js';
+import * as UserProfileHandler from '../../handler/userprofile/userprofileHandler.js';
 
 const router = express.Router();
 

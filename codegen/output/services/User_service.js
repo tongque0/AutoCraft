@@ -38,8 +38,8 @@ export async function GetAllUsers(req) {
     try {
         const items = await prisma.user.findMany({
             where: filters,
-            skip: (page - 1) * pageSize,
-            take: pageSize,
+            skip: (parseInt(page) - 1) * parseInt(pageSize),
+            take: parseInt(pageSize), // 确保 take 是整数
             // 这里可以添加排序逻辑
         });
         return items;
@@ -51,7 +51,7 @@ export async function GetAllUsers(req) {
 
 // 获取单个User
 export async function GetUserById(req) {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     try {
         const item = await prisma.user.findUnique({
             where: { id },
@@ -66,7 +66,7 @@ export async function GetUserById(req) {
 
 // 更新User
 export async function UpdateUser(req) {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     const data = req.body;
     // 这里可以添加数据验证逻辑
     try {
@@ -84,7 +84,7 @@ export async function UpdateUser(req) {
 
 // 删除User
 export async function DeleteUser(req) {
-    const { id } = req.params;
+    const id = parseInt(req.params.id);
     try {
         await prisma.user.delete({
             where: { id }
