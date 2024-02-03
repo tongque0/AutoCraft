@@ -33,7 +33,7 @@
         </template>
 
         <div v-else-if="dataLoading" class="list-card-loading">
-            <t-loading size="large" text="加载数据中..." />
+            <t-loading text="加载中..." size="small"></t-loading>
         </div>
 
         <t-dialog v-model:visible="confirmVisible" header="确认删除角色？" :body="confirmBody" :on-cancel="onCancel"
@@ -60,6 +60,7 @@ import type { FormData, Permission } from './components/DialogForm.vue';
 import DialogForm from './components/DialogForm.vue';
 
 const INITIAL_DATA: FormData = {
+    roleId:-1,
     name: '',
     status: '',
     permissions: []
@@ -114,7 +115,6 @@ const onConfirmDelete = async () => {
     const { id } = deleteProduct.value;
     try {
         await DeleteRoleable(id);
-        MessagePlugin.success('删除成功');
     } catch (error) {
         console.error('删除失败: ', error);
         MessagePlugin.error('删除失败');
@@ -148,6 +148,7 @@ const handleManageRole = async (product: CardProductType) => {
     formDialogVisible.value = true;
     const list = await GetRoleable(product.name);
     formData.value = {
+        roleId:product.id,
         name: product.name,
         status: product?.isSetup ? '1' : '0',
         permissions: initializePermissions(list),
@@ -157,9 +158,10 @@ const handleCreateRole = async () => {
     formDialogVisible.value = true;
     const list = await GetRoleable();
     formData.value = {
+        roleId:-1,
         name: '',
-        status: '1',
-        permissions: initializePermissions(list),
+        status: '',
+        permissions: list,
     };
 };
 

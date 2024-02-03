@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `RoleRoute` MODIFY `level` INTEGER NULL DEFAULT 0;

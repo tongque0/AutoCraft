@@ -23,30 +23,25 @@
     <template #footer>
       <t-avatar-group cascading="left-up" :max="2">
         <t-avatar>{{ typeMap[product.type - 1] }}</t-avatar>
-        <t-avatar
-          ><template #icon>
+        <t-avatar><template #icon>
             <add-icon />
           </template>
         </t-avatar>
       </t-avatar-group>
     </template>
     <template #actions>
-      <t-dropdown
-        :disabled="false"
-        trigger="click"
-        :options="[
-          {
-            content: $t('components.manage'),
-            value: 'manage',
-            onClick: () => handleClickManage(product),
-          },
-          {
-            content: $t('components.delete'),
-            value: 'delete',
-            onClick: () => handleClickDelete(product),
-          },
-        ]"
-      >
+      <t-dropdown :disabled="false" trigger="click" :options="[
+        {
+          content: $t('components.manage'),
+          value: 'manage',
+          onClick: () => handleClickManage(product),
+        },
+        {
+          content: $t('components.delete'),
+          value: 'delete',
+          onClick: () => handleClickDelete(product),
+        },
+      ]">
         <t-button theme="default" :disabled="false" shape="square" variant="text">
           <more-icon />
         </t-button>
@@ -67,6 +62,7 @@ import {
 import type { PropType } from 'vue';
 
 export interface CardProductType {
+  id: any;
   type: number;
   isSetup: boolean;
   description: string;

@@ -8,20 +8,30 @@ datasource db {
 }
 
 model Route {
-  id           Int     @id @default(autoincrement())
-  name         String  @unique
-  children     Route[] @relation("RouteToRoute")
-  parentRoute  Int?
-  level        Int? // 角色等级
-  parent       Route?  @relation("RouteToRoute", fields: [parentRoute], references: [id])
-  allowedRoles Role[]  @relation("RoleToRoute")
+  id          Int         @id @default(autoincrement())
+  name        String      @unique
+  children    Route[]     @relation("RouteToRoute")
+  parentRoute Int?
+  parent      Route?      @relation("RouteToRoute", fields: [parentRoute], references: [id])
+  roleRoutes  RoleRoute[] // 新增的关联
 }
 
 model Role {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  isSetup Boolean?
-  routes  Route[]  @relation("RoleToRoute")
+  id         Int         @id @default(autoincrement())
+  name       String      @unique
+  isSetup    Boolean?
+  roleRoutes RoleRoute[] // 新增的关联
+}
+
+// 新增的中间表模型
+model RoleRoute {
+  roleId  Int
+  routeId Int
+  level   Int?   @default(0)
+  role    Role  @relation(fields: [roleId], references: [id])
+  route   Route @relation(fields: [routeId], references: [id])
+
+  @@id([roleId, routeId])
 }
 
 model User {

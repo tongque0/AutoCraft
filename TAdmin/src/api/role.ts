@@ -22,13 +22,12 @@ export function DeleteRoleable(id:number){
         url:`${Api.Role}${id}`
     })
 }
-export function CreateRoleRoutes(roleId:string,routes:any[],a: unknown[],b: string) {
+export function CreateRoleRoutes(role:any,routes:any[],b: string) {
     return request.post<any>({
         url: Api.RoleRoutes,
         data:{
-            roleId:roleId,
+            role,
             routeslevel:routes,
-            selectroutes:a,
             status:b
         }
     });

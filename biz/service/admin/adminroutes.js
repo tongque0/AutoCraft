@@ -31,6 +31,17 @@ function allroute() {
                         },
                     },
                 },
+                {
+                    path: 'base1',
+                    name: 'rolelist1',
+                    component: '/role/rolelist/index',
+                    meta: {
+                        title: {
+                            zh_CN: '角色列表1',
+                            en_US: 'user List',
+                        },
+                    },
+                },
             ]
         },
         {
@@ -66,14 +77,12 @@ function allroute() {
 export async function GetRouters(req) {
     try {
         const { userId } = req.user;
-        console.log(userId)
         const roleRoutes = await getRoutesForRoleByUserId(userId);
-        console.log(roleRoutes)
         if (!roleRoutes) {
             logger.error("未能获取角色路由信息");
             throw new Error("未能获取角色路由信息");
         }
-        // updateRouteTable()
+        updateRouteTable()
         return { list: filterRoutesWithRoleData(allroute(), roleRoutes) };
     } catch (error) {
         logger.error("获取路由时出错：", error);
@@ -102,7 +111,7 @@ export async function GetRouterTree(req) {
 // 更新数据库中的路由树
 async function updateRouteTable() {
     try {
-        const currentRoutesStructure = GetRoutersNameAndChildren(allRoutes);
+        const currentRoutesStructure = GetRoutersNameAndChildren(allroute());
         console.log(currentRoutesStructure)
         const result = await CreateRoute(currentRoutesStructure);
         console.log("路由表更新成功", result);
@@ -186,36 +195,44 @@ function findRouteByName(routes, name) {
 // 获取所有路由并根据角色名设置 enable 属性
 async function getAllRoleRoutes(roleName) {
     try {
-        // 直接查找所有路由
-        const routes = await prisma.route.findMany({
+
+        const role = await prisma.role.findUnique({
+            where:{name:roleName}
+        })
+        // 查找角色关联的所有路由
+        const roleWithRoutes = await prisma.route.findMany({
             where: {
-                parentRoute: null,  // 仅选择没有父路由的路由（顶级路由）
+                parentRoute: null, // 只选取父级
             },
             include: {
                 children: {
                     include: {
-                        allowedRoles: true, // 包含子路由的 allowedRoles
+                        roleRoutes: true
                     }
                 },
-                allowedRoles: true
+                roleRoutes:true
             },
         });
-
+        if(!role){
+            return roleWithRoutes
+        }
         // 递归地设置每个路由的 enable 属性
-        const setEnableBasedOnRole = (routes) => {
+        const setEnableBasedOnRole = (routes, roleId) => {
             return routes.map(route => {
-                const enabled = route.allowedRoles.some(role => role.name === roleName);
-                let children = route.children ? setEnableBasedOnRole(route.children) : [];
-
+                const matchingRoleRoute = route.roleRoutes.find(roleRoute => roleRoute.roleId === roleId);
+                const enabled = Boolean(matchingRoleRoute); // 如果找到匹配项，enabled为true，否则为false
+                const level = matchingRoleRoute ? matchingRoleRoute.level : null;
+                let children = route.children ? setEnableBasedOnRole(route.children,roleId) : [];
                 return {
                     ...route,
                     enable: enabled,
+                    level:level,
                     children: children
                 };
             });
         };
 
-        return setEnableBasedOnRole(routes);
+        return setEnableBasedOnRole(roleWithRoutes,role.id);
     } catch (error) {
         console.error("Error in getAllRoutes:", error);
         throw error;
