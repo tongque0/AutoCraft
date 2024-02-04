@@ -60,7 +60,7 @@ import type { FormData, Permission } from './components/DialogForm.vue';
 import DialogForm from './components/DialogForm.vue';
 
 const INITIAL_DATA: FormData = {
-    roleId:-1,
+    roleId: -1,
     name: '',
     status: '',
     permissions: []
@@ -107,7 +107,7 @@ const onPageSizeChange = (size: number) => {
 const onCurrentChange = (current: number) => {
     pagination.value.current = current;
 };
-const handleDeleteItem =(product: CardProductType) => {
+const handleDeleteItem = (product: CardProductType) => {
     confirmVisible.value = true;
     deleteProduct.value = product;
 };
@@ -127,38 +127,22 @@ const onCancel = () => {
     deleteProduct.value = undefined;
     formData.value = { ...INITIAL_DATA };
 };
-const initializePermissions = (permissions: Permission[]): Permission[] => {
-    return permissions.map(permission => {
-        const initializedChildren = permission.children
-            ? initializePermissions(permission.children) // 递归初始化子权限
-            : [];
-
-        return {
-            ...permission,
-            children: initializedChildren,
-            selectedOptions: permission.enable
-                ? initializedChildren.map(child => child.id)
-                : [],
-            accessType: permission.level > 3 ? 'readWrite' : 'read', // 根据实际逻辑调整
-        };
-    });
-};
 
 const handleManageRole = async (product: CardProductType) => {
     formDialogVisible.value = true;
     const list = await GetRoleable(product.name);
     formData.value = {
-        roleId:product.id,
+        roleId: product.id,
         name: product.name,
         status: product?.isSetup ? '1' : '0',
-        permissions: initializePermissions(list),
+        permissions: list,
     };
 };
 const handleCreateRole = async () => {
     formDialogVisible.value = true;
     const list = await GetRoleable();
     formData.value = {
-        roleId:-1,
+        roleId: -1,
         name: '',
         status: '',
         permissions: list,

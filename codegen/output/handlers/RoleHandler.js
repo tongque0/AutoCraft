@@ -19,6 +19,10 @@ export async function GetRoleByIdMethod(req, res) {
     await handleServiceCall(RoleService.GetRoleById, req, res);
 }
 
+export async function GetRoleByMultipleFields(req, res) {
+    await handleServiceCall(RoleService.GetRoleByMultipleFields, req, res);
+}
+
 export async function UpdateRoleMethod(req, res) {
     await handleServiceCall(RoleService.UpdateRole, req, res);
 }

@@ -3,24 +3,24 @@ import * as util from '../../util/auth.js';
 import * as helper from '../../util/helper.js';
 import { logger } from "../../util/logger.js";
 
-// 创建<%= modelName %>
-export async function Create<%= modelName %>(req) {
+// 创建RoleRoute
+export async function CreateRoleRoute(req) {
     const data = req.body;
     // 这里可以添加数据验证逻辑
     try {
-        const createdItem = await prisma.<%= modelNameLowerCase %>.create({
+        const createdItem = await prisma.roleroute.create({
             data: data,
             // 这里可以添加关联数据的处理
         });
         return createdItem;
     } catch (error) {
-        logger.error("Error in Create<%= modelName %>:", error);
+        logger.error("Error in CreateRoleRoute:", error);
         throw error;
     }
 }
 
-// 获取所有<%= modelName %>列表（无分页）
-export async function GetAll<%= modelName %>sSimple(req) {
+// 获取所有RoleRoute列表（无分页）
+export async function GetAllRoleRoutesSimple(req) {
     const { sort, sortOrder, ...filters } = req.query;
 
     // 构建排序参数
@@ -33,20 +33,20 @@ export async function GetAll<%= modelName %>sSimple(req) {
     }
 
     try {
-        const items = await prisma.<%= modelNameLowerCase %>.findMany({
+        const items = await prisma.roleroute.findMany({
             where: filters, // 应用过滤条件
             orderBy: orderBy, // 应用排序逻辑
         });
         return items;
     } catch (error) {
-        logger.error("Error in GetAll<%= modelName %>sSimple:", error);
+        logger.error("Error in GetAllRoleRoutesSimple:", error);
         throw error;
     }
 }
 
 
-// 获取所有<%= modelName %>列表，加入分页和筛选逻辑
-export async function GetAll<%= modelName %>s(req) {
+// 获取所有RoleRoute列表，加入分页和筛选逻辑
+export async function GetAllRoleRoutes(req) {
     // 设定分页和排序的默认值
     const defaultPage = 1;
     const defaultPageSize = 10;
@@ -68,7 +68,7 @@ export async function GetAll<%= modelName %>s(req) {
     orderBy[sort] = sortOrder;
 
     try {
-        const items = await prisma.<%= modelNameLowerCase %>.findMany({
+        const items = await prisma.roleroute.findMany({
             where: filters,
             orderBy: orderBy,
             skip: (page - 1) * pageSize,
@@ -76,28 +76,28 @@ export async function GetAll<%= modelName %>s(req) {
         });
         return items;
     } catch (error) {
-        logger.error("Error in GetAll<%= modelName %>s:", error);
+        logger.error("Error in GetAllRoleRoutes:", error);
         throw error;
     }
 }
 
 
-// 获取单个<%= modelName %>
-export async function Get<%= modelName %>ById(req) {
+// 获取单个RoleRoute
+export async function GetRoleRouteById(req) {
     const id = parseInt(req.params.id);
     try {
-        const item = await prisma.<%= modelNameLowerCase %>.findUnique({
+        const item = await prisma.roleroute.findUnique({
             where: { id },
             // 这里可以添加关联数据的加载
         });
         return item;
     } catch (error) {
-        logger.error("Error in Get<%= modelName %>ById:", error);
+        logger.error("Error in GetRoleRouteById:", error);
         throw error;
     }
 }
-// 获取单个<%= modelName %>，支持根据多个条件查询
-export async function Get<%= modelName %>ByMultipleFields(req) {
+// 获取单个RoleRoute，支持根据多个条件查询
+export async function GetRoleRouteByMultipleFields(req) {
     const query = req.query;
     // 构建动态查询条件
     const queryConditions = {};
@@ -107,44 +107,44 @@ export async function Get<%= modelName %>ByMultipleFields(req) {
     }
 
     try {
-        const item = await prisma.<%= modelNameLowerCase %>.findFirst({
+        const item = await prisma.roleroute.findFirst({
             where: queryConditions,
             // 这里可以添加关联数据的加载
         });
         return item;
     } catch (error) {
-        logger.error("Error in Get<%= modelName %>ByMultipleFields:", error);
+        logger.error("Error in GetRoleRouteByMultipleFields:", error);
         throw error;
     }
 }
-// 更新<%= modelName %>
-export async function Update<%= modelName %>(req) {
+// 更新RoleRoute
+export async function UpdateRoleRoute(req) {
     const id = parseInt(req.params.id);
     const data = req.body;
     // 这里可以添加数据验证逻辑
     try {
-        const updatedItem = await prisma.<%= modelNameLowerCase %>.update({
+        const updatedItem = await prisma.roleroute.update({
             where: { id },
             data: data,
             // 这里可以添加关联数据的处理
         });
         return updatedItem;
     } catch (error) {
-        logger.error("Error in Update<%= modelName %>:", error);
+        logger.error("Error in UpdateRoleRoute:", error);
         throw error;
     }
 }
 
-// 删除<%= modelName %>
-export async function Delete<%= modelName %>(req) {
+// 删除RoleRoute
+export async function DeleteRoleRoute(req) {
     const id = parseInt(req.params.id);
     try {
-        await prisma.<%= modelNameLowerCase %>.delete({
+        await prisma.roleroute.delete({
             where: { id }
         });
-        return { message: '<%= modelName %> Deleted Successfully' };
+        return { message: 'RoleRoute Deleted Successfully' };
     } catch (error) {
-        logger.error("Error in Delete<%= modelName %>:", error);
+        logger.error("Error in DeleteRoleRoute:", error);
         throw error;
     }
 }

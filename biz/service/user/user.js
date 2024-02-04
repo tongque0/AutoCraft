@@ -17,13 +17,17 @@ export async function CreateUser(req) {
         if (user) {
             return { message: "用户已存在", status: 400 }; // 明确用户不存在的情况
         }
+        const userdata = {
+            email,
+            hashPassword,
+            phone:profile.phone,
+            username:profile.username, // 如果 username 为 null，则使用默认值
+        };
+
         // 使用事务同时创建用户和用户资料
         user = await prisma.$transaction(async prisma => {
             const newUser = await prisma.user.create({
-                data: {
-                    email,
-                    hashPassword,
-                },
+                data:userdata,
             });
 
             const userProfile = await prisma.userProfile.create({
@@ -132,8 +136,6 @@ export async function UpdateUserProfile(req) {
 export async function GetAllUsers(req) {
     try {
         const users = await prisma.user.findMany({
-
-            // 可以添加排序、过滤条件等
         });
 
         // 解构每个用户对象，将 profile 信息移至顶层
@@ -145,6 +147,52 @@ export async function GetAllUsers(req) {
         return modifiedUsers;
     } catch (error) {
         logger.error("Error in GetAllUsers:", error);
+        throw error;
+    }
+}
+export async function GetUserById(req) {
+    try {
+        // 假设用户的 ID 是通过请求参数传递的
+        const userId = req.params.id;
+        console.log(userId)
+        // 使用 Prisma 查询指定 ID 的用户
+        const user = await prisma.user.findUnique({
+            where: {
+                userId, // 确保这里的 userId 字段与您数据库中的字段名相匹配
+            },
+            include: {
+                profile: true, // 如果您希望包括关联的 UserProfile 信息
+            },
+        });
+
+        // 如果用户不存在，返回适当的响应或错误
+        if (!user) {
+            throw new Error('User not found');
+        }
+        delete user.hashPassword
+        // 返回查询到的用户信息
+        return user;
+    } catch (error) {
+        logger.error("Error in GetUserById:", error);
+        throw error;
+    }
+}
+
+export async function DeleteUserById(req) {
+    try {
+        // 假设用户的 ID 通过请求参数传递
+        const userId = req.params.id;
+        console.log(userId)
+        // 使用 Prisma 删除指定 ID 的用户
+        const deletedUser = await prisma.user.delete({
+            where: {
+                userId:userId,
+            },
+        });
+
+        return deletedUser;
+    } catch (error) {
+        logger.error("Error in DeleteUserById:", error);
         throw error;
     }
 }

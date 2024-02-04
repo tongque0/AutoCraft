@@ -19,6 +19,10 @@ export async function GetUserByIdMethod(req, res) {
     await handleServiceCall(UserService.GetUserById, req, res);
 }
 
+export async function GetUserByMultipleFields(req, res) {
+    await handleServiceCall(UserService.GetUserByMultipleFields, req, res);
+}
+
 export async function UpdateUserMethod(req, res) {
     await handleServiceCall(UserService.UpdateUser, req, res);
 }

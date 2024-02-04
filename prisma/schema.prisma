@@ -48,5 +48,5 @@ model User {
 model UserProfile {
   id     Int    @id @default(autoincrement())
   userId String @unique
-  user   User   @relation(fields: [userId], references: [userId])
+  user   User   @relation(fields: [userId], references: [userId], onDelete: Cascade)
 }

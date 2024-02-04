@@ -10,6 +10,7 @@
                         {{ $t('pages.listBase.select') }} {{ selectedRowKeys.length }} {{ $t('pages.listBase.items') }}
                     </p>
                 </div>
+                <dialog-form v-model:visible="formDialogVisible" :data="formData" />
                 <div class="search-input">
                     <t-input v-model="searchValue" :placeholder="$t('pages.listBase.placeholder')" clearable>
                         <template #suffix-icon>
@@ -48,16 +49,14 @@
 <script setup lang="ts">
 import { SearchIcon } from 'tdesign-icons-vue-next';
 import { MessagePlugin, PrimaryTableCol, TableRowData } from 'tdesign-vue-next';
-import { computed, onMounted, ref } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { GetUserList } from '@/api/user';
-import Trend from '@/components/trend/index.vue';
+import { GetUserList, DeleteUser } from '@/api/user';
 import { prefix } from '@/config/global';
 import { t } from '@/locales';
 import { useSettingStore } from '@/store';
-import { number } from 'echarts';
-
+import DialogForm from './components/DialogForm.vue';
 const store = useSettingStore();
 
 const COLUMNS: PrimaryTableCol<TableRowData>[] = [
@@ -66,7 +65,7 @@ const COLUMNS: PrimaryTableCol<TableRowData>[] = [
     { title: "用户身份", colKey: 'role', width: 160 },
     { title: "用户邮箱", width: 160, ellipsis: true, colKey: 'email' },
     { title: "用户手机号", width: 160, ellipsis: true, colKey: 'phone' },
-    { title: "用户地址", width: 160, ellipsis: true, colKey: 'address' },
+    // { title: "用户地址", width: 160, ellipsis: true, colKey: 'address' },
     {
         //@ts-ignore
         title: t('pages.listBase.operation'),
@@ -76,7 +75,8 @@ const COLUMNS: PrimaryTableCol<TableRowData>[] = [
         colKey: 'op',
     },
 ];
-
+const INITIAL_DATA: any = {};
+const formData = ref({ ...INITIAL_DATA });
 const data = ref([]);
 const pagination = ref({
     defaultPageSize: 20,
@@ -84,6 +84,7 @@ const pagination = ref({
     defaultCurrent: 1,
 });
 
+const formDialogVisible = ref(false);
 const searchValue = ref('');
 
 const dataLoading = ref(false);
@@ -107,8 +108,8 @@ const fetchData = async () => {
 const deleteIdx = ref(-1);
 const confirmBody = computed(() => {
     if (deleteIdx.value > -1) {
-        const { name } = data.value[deleteIdx.value];
-        return `删除后，${name}的所有信息将被清空，且无法恢复`;
+        const { username } = data.value[deleteIdx.value];
+        return `删除后，${username}的所有信息将被清空，且无法恢复`;
     }
     return '';
 });
@@ -127,17 +128,37 @@ const resetIdx = () => {
     deleteIdx.value = -1;
 };
 
-const onConfirmDelete = () => {
-    // 真实业务请发起请求
-    data.value.splice(deleteIdx.value, 1);
-    pagination.value.total = data.value.length;
-    const selectedIdx = selectedRowKeys.value.indexOf(deleteIdx.value);
-    if (selectedIdx > -1) {
-        selectedRowKeys.value.splice(selectedIdx, 1);
+const onConfirmDelete = async () => {
+    if (deleteIdx.value > -1) {
+        // 基于当前页的索引找到用户的完整信息，特别是 userId
+        const userIdToDelete = data.value[deleteIdx.value].userId;
+
+        try {
+            // 发送删除请求
+            await DeleteUser(userIdToDelete);
+
+            // 从 data 中找到并删除用户
+            const indexInData = data.value.findIndex(user => user.userId === userIdToDelete);
+            if (indexInData !== -1) {
+                data.value.splice(indexInData, 1);
+                pagination.value.total -= 1; // 更新总数据量
+            }
+
+            // 如果删除的是当前选中的行，从 selectedRowKeys 中移除
+            const selectedIdx = selectedRowKeys.value.indexOf(userIdToDelete);
+            if (selectedIdx > -1) {
+                selectedRowKeys.value.splice(selectedIdx, 1);
+            }
+
+            MessagePlugin.success('删除成功');
+        } catch (error) {
+            console.error('删除失败:', error);
+            MessagePlugin.error('删除失败');
+        } finally {
+            confirmVisible.value = false;
+            resetIdx();
+        }
     }
-    confirmVisible.value = false;
-    MessagePlugin.success('删除成功');
-    resetIdx();
 };
 
 const onCancel = () => {
@@ -149,21 +170,27 @@ const rowKey = 'userId';
 const rehandleSelectChange = (val: string[]) => {
     selectedRowKeys.value = val;
 };
-const rehandlePageChange = (curr: unknown, pageInfo: unknown) => {
-    console.log('分页变化', curr, pageInfo);
+const rehandlePageChange = async (curr: { current: number; pageSize: number; }, pageInfo: any) => {
+    // 更新分页信息
+    pagination.value.defaultCurrent = curr.current;
+    pagination.value.defaultPageSize = curr.pageSize;
+
+    // console.log('分页变化', curr, pageInfo);
 };
 const rehandleChange = (changeParams: unknown, triggerAndData: unknown) => {
-    console.log('统一Change', changeParams, triggerAndData);
+    // console.log('统一Change', changeParams, triggerAndData);
 };
 const handleClickDetail = () => {
-    router.push('/detail/base');
+    formDialogVisible.value = true
+    formData.value = {};
 };
 const handleSetupContract = () => {
-    router.push('/form/base');
+    formDialogVisible.value = true
+    formData.value = {};
 };
 const handleClickDelete = (row: { rowIndex: any }) => {
-    deleteIdx.value = row.rowIndex;
-    // console.log(globalIndex,row)
+    deleteIdx.value = row.rowIndex + (pagination.value.defaultCurrent - 1) * pagination.value.defaultPageSize;
+    console.log(deleteIdx.value, pagination.value)
     confirmVisible.value = true;
 };
 
@@ -174,6 +201,11 @@ const headerAffixedTop = computed(
             container: `.${prefix}-layout`,
         }) as any,
 );
+watch(formDialogVisible, (newValue, oldValue) => {
+    if (!newValue) {
+        fetchData();
+    }
+});
 </script>
 
 <style lang="less" scoped>

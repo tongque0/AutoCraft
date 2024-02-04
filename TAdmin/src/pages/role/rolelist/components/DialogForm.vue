@@ -1,10 +1,10 @@
 <template>
-  <t-dialog v-model:visible="formVisible" :header="$t('pages.listCard.create')" :width="680" :footer="false">
+  <t-dialog v-model:visible="formVisible" header="新建角色" :width="680" :footer="false">
     <!-- <t-loading text="加载中..." size="small"></t-loading> -->
     <template #body>
       <!-- 表单内容 -->
       <t-form ref="form" :data="formData" :rules="rules" :label-width="100" @submit="onSubmit" labelAlign="top">
-        <t-form-item label="角色类型" name="name" style="margin-bottom: 10px;">
+        <t-form-item label="角色类型" name="name">
           <t-input v-model="formData.name" :style="{ width: '200px' }" style="margin-right: 20px;" />
           <t-radio-group v-model="formData.status">
             <t-radio value="0">{{ $t('pages.listCard.productStatusEnum.off') }}</t-radio>
@@ -81,7 +81,6 @@ const props = defineProps({
 const formVisible = ref(false);
 const formData = ref({ ...INITIAL_DATA });
 const textareaValue = ref('');
-const selectroutes = ref(new Set());
 //获取所有选择路由
 const flattenPermissions = (permissions: Permission[]): any[] => {
   let result: any[] = [];
@@ -131,7 +130,6 @@ const onSubmit = async ({ validateResult, firstError }: SubmitContext<FormData>)
 
 const onClickCloseBtn = () => {
   formVisible.value = false;
-  selectroutes.value.clear()
   formData.value = { ...INITIAL_DATA };
 };
 

@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/role/create', RoleHandler.CreateRoleMethod);
 router.get('/role/allsimple', RoleHandler.GetAllRolesSimpleMethod);
 router.get('/role/all', RoleHandler.GetAllRolesMethod);
+router.get('/role/Fields', RoleHandler.GetRoleByMultipleFieldsMethod);
 router.get('/role/:id', RoleHandler.GetRoleByIdMethod);
 router.put('/role/:id', RoleHandler.UpdateRoleMethod);
 router.delete('/role/:id', RoleHandler.DeleteRoleMethod);

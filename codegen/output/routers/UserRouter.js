@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/user/create', UserHandler.CreateUserMethod);
 router.get('/user/allsimple', UserHandler.GetAllUsersSimpleMethod);
 router.get('/user/all', UserHandler.GetAllUsersMethod);
+router.get('/user/Fields', UserHandler.GetUserByMultipleFieldsMethod);
 router.get('/user/:id', UserHandler.GetUserByIdMethod);
 router.put('/user/:id', UserHandler.UpdateUserMethod);
 router.delete('/user/:id', UserHandler.DeleteUserMethod);

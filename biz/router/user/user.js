@@ -10,5 +10,7 @@ router.post('/user/login',user.LoginMethod)
 router.post('/user/changepassword',user.ChangePasswordMethod)
 router.post('/user/updateuserprofile',user.UpdateUserMethod)
 router.get('/user/list',user.GetAllUsersMethod)
+router.delete('/user/:id',user.DeleteUserByIdMethod)
+router.get('/user/:id',user.GetUserByIdMethod)
 // 继续添加其他路由...
 export default router;

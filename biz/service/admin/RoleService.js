@@ -210,7 +210,7 @@ export async function getRoutesForRoleByUserId(userId) {
         if (!roleWithRoutes) {
             throw new Error('角色不存在');
         }
-        console.log(roleWithRoutes)
+        // console.log(roleWithRoutes)
         return roleWithRoutes.roleRoutes.map(route => route.route);
     } catch (error) {
         console.error("Error in getRoutesForRole:", error);

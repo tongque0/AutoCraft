@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/route/create', RouteHandler.CreateRouteMethod);
 router.get('/route/allsimple', RouteHandler.GetAllRoutesSimpleMethod);
 router.get('/route/all', RouteHandler.GetAllRoutesMethod);
+router.get('/route/Fields', RouteHandler.GetRouteByMultipleFieldsMethod);
 router.get('/route/:id', RouteHandler.GetRouteByIdMethod);
 router.put('/route/:id', RouteHandler.UpdateRouteMethod);
 router.delete('/route/:id', RouteHandler.DeleteRouteMethod);

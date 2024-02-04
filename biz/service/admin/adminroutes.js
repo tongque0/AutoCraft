@@ -82,7 +82,7 @@ export async function GetRouters(req) {
             logger.error("未能获取角色路由信息");
             throw new Error("未能获取角色路由信息");
         }
-        updateRouteTable()
+        // updateRouteTable()
         return { list: filterRoutesWithRoleData(allroute(), roleRoutes) };
     } catch (error) {
         logger.error("获取路由时出错：", error);

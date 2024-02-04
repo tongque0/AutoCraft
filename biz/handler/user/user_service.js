@@ -17,4 +17,9 @@ export async function UpdateUserMethod(req, res) {
 export async function GetAllUsersMethod(req, res) {
     await handleServiceCall(UserMethodService.GetAllUsers, req, res);
 }
-
+export async function DeleteUserByIdMethod(req, res) {
+    await handleServiceCall(UserMethodService.DeleteUserById, req, res);
+}
+export async function GetUserByIdMethod(req, res) {
+    await handleServiceCall(UserMethodService.GetUserById, req, res);
+}

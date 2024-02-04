@@ -7,6 +7,7 @@ const router = express.Router();
 router.post('/userprofile/create', UserProfileHandler.CreateUserProfileMethod);
 router.get('/userprofile/allsimple', UserProfileHandler.GetAllUserProfilesSimpleMethod);
 router.get('/userprofile/all', UserProfileHandler.GetAllUserProfilesMethod);
+router.get('/userprofile/Fields', UserProfileHandler.GetUserProfileByMultipleFieldsMethod);
 router.get('/userprofile/:id', UserProfileHandler.GetUserProfileByIdMethod);
 router.put('/userprofile/:id', UserProfileHandler.UpdateUserProfileMethod);
 router.delete('/userprofile/:id', UserProfileHandler.DeleteUserProfileMethod);

@@ -19,6 +19,10 @@ export async function Get<%= modelName %>ByIdMethod(req, res) {
     await handleServiceCall(<%= modelName %>Service.Get<%= modelName %>ById, req, res);
 }
 
+export async function Get<%= modelName %>ByMultipleFields(req, res) {
+    await handleServiceCall(<%= modelName %>Service.Get<%= modelName %>ByMultipleFields, req, res);
+}
+
 export async function Update<%= modelName %>Method(req, res) {
     await handleServiceCall(<%= modelName %>Service.Update<%= modelName %>, req, res);
 }

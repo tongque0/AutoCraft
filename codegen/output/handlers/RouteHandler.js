@@ -19,6 +19,10 @@ export async function GetRouteByIdMethod(req, res) {
     await handleServiceCall(RouteService.GetRouteById, req, res);
 }
 
+export async function GetRouteByMultipleFields(req, res) {
+    await handleServiceCall(RouteService.GetRouteByMultipleFields, req, res);
+}
+
 export async function UpdateRouteMethod(req, res) {
     await handleServiceCall(RouteService.UpdateRoute, req, res);
 }
