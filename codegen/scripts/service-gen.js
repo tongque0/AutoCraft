@@ -25,7 +25,16 @@ modelNames.forEach(modelName => {
         modelNameLowerCase: modelName.toLowerCase()
     });
 
+
     const outputPath = path.join(__dirname, `../output/services/${modelName}_service.js`);
+    const outputDir = path.dirname(outputPath);
+
+    // 检查目录是否存在，如果不存在，则创建
+    if (!fs.existsSync(outputDir)) {
+        fs.mkdirSync(outputDir, { recursive: true });
+    }
+
+    // 现在可以安全地写入文件了
     fs.writeFileSync(outputPath, renderedCode);
 });
 
