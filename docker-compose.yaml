@@ -1,28 +1,46 @@
-version: '1'
-services:
-  app:
-    build: .
-    ports:
-      - "3002:3002"
-    environment:
-      - NODE_ENV=docker-devlopment
-    depends_on:
-      - mysql
-      - redis
-    volumes:
-      - .:/app
-      - /app/node_modules
+# 文件说明:
+# 该文件用于CI/CD自动化部署流程或本地开发环境的快速部署。
+# 它定义了构建和运行TAdmin和node-server服务所需的配置。
+# 注意:
+# - 镜像名称（例如：YOUR_USERNAME/tadmin:latest）需要根据您的Docker Hub账号或使用的容器镜像仓库账号进行替换。
+# - 如果您使用私有仓库的镜像，请确保您的Docker环境已登录相应账号。
+# - 如果是本地构建，请删除image选项，Docker Compose会根据build指令构建镜像。
 
-  mysql:
-    image: 'mysql:latest'
+version: '3.8' # 使用Docker Compose文件格式版本3.8
+
+services:
+  # TAdmin服务定义
+  TAdmin:
+    build: # 构建TAdmin服务的设置
+      context: ./TAdmin # 指定Dockerfile所在的上下文路径
+      dockerfile: Dockerfile # 指定用于构建镜像的Dockerfile
+    image: YOUR_USERNAME/tadmin:latest # 本地构建时可删除此行。替换YOUR_USERNAME为您的Docker Hub账号名或容器仓库用户名
     ports:
-      - 3306:3306
-    environment:
-      - MYSQL_DATABASE=NServer
-      - MYSQL_USER=NServer
-      - MYSQL_PASSWORD=NServer1
-      - MYSQL_RANDOM_ROOT_PASSWORD="yes"
-  redis:
-    image: 'redis:latest'
+      - "3003:3003" # 将容器的3003端口映射到宿主机的3003端口
+
+  # node-server服务定义
+  node-server:
+    build: # 构建node-server服务的设置
+      context: ./ # 指定Dockerfile的上下文路径为当前目录
+      dockerfile: Dockerfile # 指定用于构建镜像的Dockerfile
+    image: YOUR_USERNAME/nodeserver:latest # 本地构建时可删除此行。替换YOUR_USERNAME为您的Docker Hub账号名或容器仓库用户名
     ports:
-      - 6379:6379
+      - "3002:3002" # 将容器的3002端口映射到宿主机的3002端口
+
+  # 以下服务为可选，根据是否需要mysql和redis来决定是否启用
+  # mysql服务定义
+  # mysql:
+  #   image: 'mysql:latest' # 使用最新版mysql镜像
+  #   ports:
+  #     - 3306:3306 # 将容器的3306端口映射到宿主机的3306端口
+  #   environment: # 环境变量设置，用于mysql服务的初始化
+  #     - MYSQL_DATABASE=NServer # 创建的数据库名
+  #     - MYSQL_USER=NServer # 数据库用户
+  #     - MYSQL_PASSWORD=NServer1 # 数据库用户密码
+  #     - MYSQL_RANDOM_ROOT_PASSWORD="yes" # 生成随机的root用户密码
+
+  # redis服务定义
+  # redis:
+  #   image: 'redis:latest' # 使用最新版redis镜像
+  #   ports:
+  #     - 6379:6379 # 将容器的6379端口映射到宿主机的6379端口

@@ -16,6 +16,7 @@ COPY . .
 # 为应用程序打开端口（与 docker-compose 中映射的端口相同）
 EXPOSE 3002
 
+RUN npx prisma generate
 # 运行应用
-CMD ["npm", "run", "docker"]
+CMD ["npm", "run", "prod"]
 

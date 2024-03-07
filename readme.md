@@ -1,5 +1,5 @@
 
-# NodeServer
+# AutoCraft
 
 这是一个使用node服务端的开发模版，致力于快速简单的构建高稳定，高可用的服务。此模板自带后台管理系统(暂未整合到此项目中)，支持根据schema.prisma生成CRUD代码，同时生成后台pages页面。
 
@@ -64,7 +64,7 @@ Dokcer:
    - 在 `service` 层测试业务逻辑，使用测试框架（如 Mocha、Jest）。
 
 4. **自动化部署**
-   - 考虑使用 CI/CD 流水线自动构建、测试和部署。
+   - 采用github Action实现CI/CD流程，采用docker化部署，方便快捷，具体参考deploy.yml
    - 确保提交到版本控制库后的自动化流程。
 
 5. **持续改进**

@@ -1,14 +1,13 @@
 {
-  "name": "nodeserver",
+  "name": "autocraft",
   "type": "module",
   "version": "1.0.0",
-  "description": "",
+  "description": "这是一个使用node服务端的开发模版，致力于快速简单的构建高稳定，高可用的服务。此模板自带后台管理系统(暂未整合到此项目中)，支持根据schema.prisma生成CRUD代码，同时生成后台pages页面。",
   "main": "index.js",
   "scripts": {
     "dev": "npx dotenv -e .env.development nodemon app.js",
     "server": "npx dotenv -e .env.development node app.js",
     "prod": "npx dotenv -e .env.production node app.js",
-    "docker": "npx dotenv -e .env.docker-development -- npx prisma migrate dev && npx dotenv -e .env.docker-development -- node app.js",
     "migrate": "dotenv -e .env.development -- npx prisma migrate dev --name migrate1",
     "migrate:reset": "dotenv -e .env.development -- npx npx prisma migrate reset",
     "prisma": "dotenv -e .env.development -- npx npx prisma studio"

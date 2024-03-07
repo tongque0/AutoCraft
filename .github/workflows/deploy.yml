@@ -1,0 +1,50 @@
+# name: 定义了此CI/CD流程的名称，方便在GitHub Actions的UI中识别
+name: Build and Deploy
+
+# on: 指定触发此工作流的事件，这里是在代码被推送到指定分支时
+on:
+  push:
+    branches:
+      - test # 触发自动化部署的分支，生产环境中通常设置为main
+
+# jobs: 定义一系列在此工作流中执行的作业
+jobs:
+  # 定义构建和推送Docker镜像的作业
+  build-and-push-docker:
+    runs-on: ubuntu-latest # 指定运行作业的虚拟机环境
+    steps:
+      - uses: actions/checkout@v2 # 检出代码
+
+      - name: Log in to Docker Hub # 登录Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }} # GitHub密钥库中的Docker用户名
+          password: ${{ secrets.DOCKER_PASSWORD }} # GitHub密钥库中的Docker密码
+
+      - name: Build and push Docker images with Docker Compose # 使用Docker Compose构建和推送镜像
+        run: |
+          docker-compose build
+          docker-compose push
+        working-directory: ./NodeSever/ # 指定工作目录
+
+  # 定义部署Docker容器的作业
+  deploy-docker:
+    needs: build-and-push-docker # 依赖于前面的构建和推送作业
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to Server # 使用SSH部署到服务器
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }} # 服务器IP
+          username: ${{ secrets.SERVER_USER }} # 服务器用户名
+          key: ${{ secrets.DEPLOY_KEY }} # SSH密钥         # 下面的脚本停止、移除旧容器，然后拉取新镜像并启动新容器
+          script: |
+            docker pull tongque00/nodeserver:latest
+            docker stop nodeserver || true
+            docker rm nodeserver || true
+            docker run -d --name nodeserver --network=host tongque00/nodeserver:latest
+
+            docker pull tongque00/tadmin:latest
+            docker stop tadmin || true
+            docker rm tadmin || true
+            docker run -d --name tadmin -p 3003:3003 tongque00/tadmin:latest
